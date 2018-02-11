@@ -1,2 +1,3 @@
 .idea/*
 properties-*.csv
+__pycache__/*
