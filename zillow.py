@@ -7,6 +7,10 @@ def parse_page(sort, beds, page):
 
     url = build_url(sort, beds, page)
     response = make_request(url)
+
+    if any(history.status_code == 302 for history in response.history):
+        raise ValueError("Page number {0} does not exist".format(page))
+
     parser = html.fromstring(response.text)
     search_results = parser.xpath("//div[@id='search-results']//article")
 

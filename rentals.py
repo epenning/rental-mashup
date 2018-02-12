@@ -16,7 +16,8 @@ def find_rentals(sort, beds):
 
             time.sleep(2)
         except:
-            print("Failed to process page {0}:".format(page))
+            print("Failed to process page {0}".format(page))
+            break
 
 
 def process(rental):
