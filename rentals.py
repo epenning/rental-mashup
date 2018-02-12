@@ -6,10 +6,10 @@ output_filename = "properties-Austin-TX.csv"
 output_fieldnames = ['address', 'postal_code']
 
 
-def find_rentals(sort, beds):
+def find_rentals(filters):
     for page in range(1, 20):
         try:
-            rentals = zillow.parse_page(sort, beds, page)
+            rentals = zillow.parse_page(filters, page)
 
             for rental in rentals:
                 process(rental)

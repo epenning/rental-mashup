@@ -2,10 +2,10 @@ from lxml import html
 import requests
 
 
-def parse_page(sort, beds, page):
+def parse_page(filters, page):
     print("Fetching data for page {0}...".format(page))
 
-    url = build_url(sort, beds, page)
+    url = build_url(filters, page)
     response = make_request(url)
 
     if any(history.status_code == 302 for history in response.history):
@@ -33,16 +33,17 @@ def parse_page(sort, beds, page):
     return rentals
 
 
-def build_url(sort, beds, page):
+def build_url(filters, page):
     url = "https://www.zillow.com/homes/for_rent/Austin-TX"
 
-    if sort == "newest":
+    if filters.sort == "newest":
         url += "/days_sort"
-    elif sort == "cheapest":
+    elif filters.sort == "cheapest":
         url += "/paymenta_sort"
 
-    if beds:
-        url += "/{0}-_beds".format(beds)
+    url += "/{0}-_beds".format(filters.beds)
+    url += "/{0}-{1}_mp".format(filters.minrent, filters.maxrent)
+    url += "/{0}-{1}_size".format(filters.minsqft, filters.maxsqft)
 
     url += "/{0}_p".format(page)
 

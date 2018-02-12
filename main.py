@@ -6,14 +6,12 @@ import rentals
 def main():
     argparser = init_argparser()
     args = argparser.parse_args()
-    sort = args.sort
-    beds = args.beds
 
     with open(rentals.output_filename, 'wb') as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=rentals.output_fieldnames)
         writer.writeheader()
 
-    rentals.find_rentals(sort, beds)
+    rentals.find_rentals(args)
 
 
 def init_argparser():
@@ -24,6 +22,18 @@ def init_argparser():
 
     beds_help = "minimum number of beds"
     argparser.add_argument('-beds', choices=range(1, 7), type=int, help=beds_help)
+
+    min_rent_help = "minimum rent"
+    argparser.add_argument('-minrent', type=int, help=min_rent_help)
+
+    max_rent_help = "maximum rent"
+    argparser.add_argument('-maxrent', type=int, help=max_rent_help)
+
+    min_sq_feet_help = "minimum rent"
+    argparser.add_argument('-minsqft', type=int, help=min_sq_feet_help)
+
+    max_sq_feet_help = "maximum rent"
+    argparser.add_argument('-maxsqft', type=int, help=max_sq_feet_help)
 
     return argparser
 
