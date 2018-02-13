@@ -1,4 +1,5 @@
 from lxml import html
+from lxml import etree
 import requests
 
 
@@ -6,7 +7,7 @@ def parse_page(filters, page):
     print("Fetching data for page {0}...".format(page))
 
     url = build_url(filters, page)
-    response = make_request(url)
+    response = make_web_request(url)
 
     if any(history.status_code == 302 for history in response.history):
         raise ValueError("Page number {0} does not exist".format(page))
@@ -27,10 +28,22 @@ def parse_page(filters, page):
                 'address': address,
                 'postal_code': postal_code
             }
-
             rentals.append(rental)
 
     return rentals
+
+
+def get_details(rental):
+    params = {
+        'zws-id': 'X1-ZWz1g8owfualfv_aau4b',
+        'address': rental.get('address'),
+        'citystatezip': rental.get('postal_code')
+    }
+
+    response = make_soap_request("http://www.zillow.com/webservice/GetDeepSearchResults.htm", params)
+
+    root = etree.XML(response.content)
+    print(root.xpath('response/results/result/zpid')[0].text)
 
 
 def build_url(filters, page):
@@ -50,7 +63,7 @@ def build_url(filters, page):
     return url
 
 
-def make_request(url):
+def make_web_request(url):
     headers = {
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'accept-encoding': 'gzip, deflate, sdch, br',
@@ -60,3 +73,9 @@ def make_request(url):
         'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
     }
     return requests.get(url, headers=headers)
+
+
+def make_soap_request(url, params):
+    headers = {'content-type': 'text/xml'}
+    return requests.get(url, params, headers=headers)
+

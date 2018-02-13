@@ -15,12 +15,13 @@ def find_rentals(filters):
                 process(rental)
 
             time.sleep(2)
-        except:
+        except ValueError:
             print("Failed to process page {0}".format(page))
             break
 
 
 def process(rental):
+    # zillow.get_details(rental)
     print("Writing data to output file...")
     with open(output_filename, 'ab') as csv_file:
         writer = csv.DictWriter(csv_file, output_fieldnames)
