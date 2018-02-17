@@ -1,6 +1,7 @@
 import unicodecsv as csv
 import argparse
 import rentals
+import copy
 
 
 def main():
@@ -11,7 +12,7 @@ def main():
         writer = csv.DictWriter(csv_file, fieldnames=rentals.output_fieldnames)
         writer.writeheader()
 
-    rentals.find_rentals(args)
+    rentals.find_rentals(args, args.work)
 
 
 def init_argparser():
@@ -34,6 +35,9 @@ def init_argparser():
 
     max_sq_feet_help = "maximum rent"
     argparser.add_argument('-maxsqft', type=int, help=max_sq_feet_help)
+
+    work_help = "work address"
+    argparser.add_argument('-work', default=None, help=work_help)
 
     return argparser
 
