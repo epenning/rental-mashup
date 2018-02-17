@@ -2,6 +2,7 @@ import request
 import re
 import binascii
 import json
+from lxml import html
 
 
 def fiber_ready(rental):
@@ -12,7 +13,8 @@ def fiber_ready(rental):
 
         if any(history.status_code == 302 for history in response.history):
             return True
-        # or if address already has a google fiber account!
+        else:
+            return already_registered(response)
 
     return False
 
@@ -52,3 +54,13 @@ def replace_hex(hex_match):
     hex_match = hex_match.group()
     hex_match = re.sub('\\\\x', '', hex_match)
     return binascii.unhexlify(hex_match).decode("utf-8")
+
+
+def already_registered(response):
+    parser = html.fromstring(response.text)
+    already_registered = parser.xpath("//cta-already-registered")
+
+    if already_registered:
+        return True
+
+    return False
