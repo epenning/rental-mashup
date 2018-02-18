@@ -5,7 +5,7 @@ import google_fiber
 import travel
 
 output_filename = "properties-Austin-TX.csv"
-output_fieldnames = ['address', 'postal_code', 'fiber_ready', 'driving_time', 'transit_time', 'bicycling_time']
+output_fieldnames = ['address', 'postal_code', 'url', 'fiber_ready', 'driving_time', 'transit_time', 'bicycling_time']
 
 
 def find_rentals(filters, work):
