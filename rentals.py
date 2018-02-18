@@ -29,7 +29,6 @@ def process(rental, work, filters):
     rental['fiber_ready'] = google_fiber.fiber_ready(rental)
 
     if work:
-        rental['driving_time'] = travel.travel_time(rental, 'driving', work)
         rental['transit_time'] = travel.travel_time(rental, 'transit', work)
 
     output.append_file(get_output_filename(rental, filters), rental)
@@ -47,8 +46,8 @@ def get_output_filename(rental, filters):
 
 def traveltime_filter(rental, filters):
     return (filters.traveltime and
-            (rental['driving_time'] and rental['driving_time'] > filters.traveltime) and
-            (rental['transit_time'] and rental['transit_time'] > filters.traveltime))
+            (not rental['transit_time'] or
+                (rental['transit_time'] and rental['transit_time'] > filters.traveltime)))
 
 
 def fiber_filter(rental, filters):

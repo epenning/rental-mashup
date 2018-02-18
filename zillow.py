@@ -1,6 +1,7 @@
 from lxml import html
 from lxml import etree
 import request
+import re
 
 
 def parse_page(filters, page):
@@ -20,15 +21,19 @@ def parse_page(filters, page):
         raw_address = properties.xpath(".//span[@itemprop='address']//span[@itemprop='streetAddress']//text()")
         raw_postal_code = properties.xpath(".//span[@itemprop='address']//span[@itemprop='postalCode']//text()")
         raw_url = properties.xpath(".//a[contains(@class,'overlay-link')]/@href")
+        raw_rent = properties.xpath(".//span[@class='zsg-photo-card-price']//text()")
 
         address = ' '.join(' '.join(raw_address).split()) if raw_address else None
         postal_code = ''.join(raw_postal_code).strip() if raw_postal_code else None
+        property_url = "https://www.zillow.com" + url[0] if url else None
+        rent = int(re.sub(r"(/mo)|\$|,|\+", '', ''.join(raw_rent).strip())) if raw_rent else None
 
         if address:
             rental = {
                 'address': address,
                 'postal_code': postal_code,
-                'url': "https://www.zillow.com" + raw_url[0]
+                'url': property_url,
+                'rent': rent
             }
             rentals.append(rental)
 
