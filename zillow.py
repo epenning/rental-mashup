@@ -25,7 +25,7 @@ def parse_page(filters, page):
 
         address = ' '.join(' '.join(raw_address).split()) if raw_address else None
         postal_code = ''.join(raw_postal_code).strip() if raw_postal_code else None
-        property_url = "https://www.zillow.com" + url[0] if url else None
+        property_url = "https://www.zillow.com" + raw_url[0] if raw_url else None
         rent = int(re.sub(r"(/mo)|\$|,|\+", '', ''.join(raw_rent).strip())) if raw_rent else None
 
         if address:
