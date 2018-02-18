@@ -31,7 +31,6 @@ def process(rental, work, filters):
     if work:
         rental['driving_time'] = travel.travel_time(rental, 'driving', work)
         rental['transit_time'] = travel.travel_time(rental, 'transit', work)
-        rental['bicycling_time'] = travel.travel_time(rental, 'bicycling', work)
 
     output.append_file(get_output_filename(rental, filters), rental)
 
@@ -49,8 +48,7 @@ def get_output_filename(rental, filters):
 def traveltime_filter(rental, filters):
     return (filters.traveltime and
             (rental['driving_time'] and rental['driving_time'] > filters.traveltime) and
-            (rental['transit_time'] and rental['transit_time'] > filters.traveltime) and
-            (rental['bicycling_time'] and rental['bicycling_time'] > filters.traveltime))
+            (rental['transit_time'] and rental['transit_time'] > filters.traveltime))
 
 
 def fiber_filter(rental, filters):
