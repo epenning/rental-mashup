@@ -1,21 +1,10 @@
-import unicodecsv as csv
 import argparse
 import rentals
-import copy
 
 
 def main():
     argparser = init_argparser()
     args = argparser.parse_args()
-
-    with open(rentals.output_filename(), 'wb') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=rentals.output_fieldnames)
-        writer.writeheader()
-
-    with open(rentals.output_filename(mismatch=True), 'wb') as csv_file:
-        writer = csv.DictWriter(csv_file, fieldnames=rentals.output_fieldnames)
-        writer.writeheader()
-
     rentals.find_rentals(args, args.work)
 
 

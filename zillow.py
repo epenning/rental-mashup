@@ -50,7 +50,7 @@ def get_details(rental):
 
 
 def build_url(filters, page):
-    url = "https://www.zillow.com/homes/for_rent/Austin-TX"
+    url = "https://www.zillow.com/homes/for_rent/Austin-TX/30.336583,-97.650433,30.210718,-97.834969_rect"
 
     if filters.sort == "newest":
         url += "/days_sort"
@@ -64,6 +64,7 @@ def build_url(filters, page):
     url += "/{0}_p".format(page)
 
     return url
+
 
 class PageException(Exception):
     """This page does not exist"""

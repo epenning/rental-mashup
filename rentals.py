@@ -1,15 +1,15 @@
-import unicodecsv as csv
 import time
 import zillow
 import google_fiber
 import travel
-
-output_filename_base = "properties-Austin-TX"
-output_filename_extension = ".csv"
-output_fieldnames = ['address', 'postal_code', 'url', 'fiber_ready', 'driving_time', 'transit_time', 'bicycling_time']
+import output
 
 
 def find_rentals(filters, work):
+    output.start_file("match")
+    output.start_file("nofiber")
+    output.start_file("mismatch")
+
     for page in range(1, 100):
         try:
             rentals = zillow.parse_page(filters, page)
@@ -26,7 +26,6 @@ def find_rentals(filters, work):
 
 
 def process(rental, work, filters):
-    # zillow.get_details(rental)
     rental['fiber_ready'] = google_fiber.fiber_ready(rental)
 
     if work:
@@ -34,24 +33,25 @@ def process(rental, work, filters):
         rental['transit_time'] = travel.travel_time(rental, 'transit', work)
         rental['bicycling_time'] = travel.travel_time(rental, 'bicycling', work)
 
-    if not is_mismatch(rental, filters):
-        print(rental['url'])
-
-    with open(output_filename(rental, filters), 'ab') as csv_file:
-        writer = csv.DictWriter(csv_file, output_fieldnames)
-        writer.writerow(rental)
+    output.append_file(get_output_filename(rental, filters), rental)
 
 
-def output_filename(rental=None, filters=None, mismatch=False):
-    if mismatch or is_mismatch(rental, filters):
-        return output_filename_base + "-mismatch" + output_filename_extension
+def get_output_filename(rental, filters):
+    if traveltime_filter(rental, filters):
+        return "mismatch"
 
-    return output_filename_base + output_filename_extension
+    if fiber_filter(rental, filters):
+        return "nofiber"
+
+    return "match"
 
 
-def is_mismatch(rental, filters):
-    return (filters and rental and ((filters.fiber and not rental['fiber_ready']) or
-            (filters.traveltime and
-             (rental['driving_time'] and rental['driving_time'] > filters.traveltime) and
-             (rental['transit_time'] and rental['transit_time'] > filters.traveltime) and
-             (rental['bicycling_time'] and rental['bicycling_time'] > filters.traveltime))))
+def traveltime_filter(rental, filters):
+    return (filters.traveltime and
+            (rental['driving_time'] and rental['driving_time'] > filters.traveltime) and
+            (rental['transit_time'] and rental['transit_time'] > filters.traveltime) and
+            (rental['bicycling_time'] and rental['bicycling_time'] > filters.traveltime))
+
+
+def fiber_filter(rental, filters):
+    return filters.fiber and not rental['fiber_ready']
