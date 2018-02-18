@@ -22,18 +22,24 @@ def parse_page(filters, page):
         raw_postal_code = properties.xpath(".//span[@itemprop='address']//span[@itemprop='postalCode']//text()")
         raw_url = properties.xpath(".//a[contains(@class,'overlay-link')]/@href")
         raw_rent = properties.xpath(".//span[@class='zsg-photo-card-price']//text()")
+        raw_latitude = properties.attrib['data-latitude']
+        raw_longitude = properties.attrib['data-longitude']
 
         address = ' '.join(' '.join(raw_address).split()) if raw_address else None
         postal_code = ''.join(raw_postal_code).strip() if raw_postal_code else None
         property_url = "https://www.zillow.com" + raw_url[0] if raw_url else None
         rent = int(re.sub(r"(/mo)|\$|,|\+", '', ''.join(raw_rent).strip())) if raw_rent else None
+        lat = float(raw_latitude)/1000000
+        long = float(raw_longitude)/1000000
 
         if address:
             rental = {
                 'address': address,
                 'postal_code': postal_code,
                 'url': property_url,
-                'rent': rent
+                'rent': rent,
+                'lat': lat,
+                'long': long
             }
             rentals.append(rental)
 
