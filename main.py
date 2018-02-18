@@ -8,7 +8,11 @@ def main():
     argparser = init_argparser()
     args = argparser.parse_args()
 
-    with open(rentals.output_filename, 'wb') as csv_file:
+    with open(rentals.output_filename(), 'wb') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=rentals.output_fieldnames)
+        writer.writeheader()
+
+    with open(rentals.output_filename(mismatch=True), 'wb') as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=rentals.output_fieldnames)
         writer.writeheader()
 
@@ -38,6 +42,12 @@ def init_argparser():
 
     work_help = "work address"
     argparser.add_argument('-work', default=None, help=work_help)
+
+    fiber_help = "google fiber ready"
+    argparser.add_argument('--fiber', action="store_true", help=fiber_help)
+
+    traveltime_help = "maximum travel time"
+    argparser.add_argument('-traveltime', type=int, help=traveltime_help)
 
     return argparser
 

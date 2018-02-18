@@ -19,7 +19,7 @@ def parse_page(filters, page):
     for properties in search_results:
         raw_address = properties.xpath(".//span[@itemprop='address']//span[@itemprop='streetAddress']//text()")
         raw_postal_code = properties.xpath(".//span[@itemprop='address']//span[@itemprop='postalCode']//text()")
-        url = properties.xpath(".//a[contains(@class,'overlay-link')]/@href")
+        raw_url = properties.xpath(".//a[contains(@class,'overlay-link')]/@href")
 
         address = ' '.join(' '.join(raw_address).split()) if raw_address else None
         postal_code = ''.join(raw_postal_code).strip() if raw_postal_code else None
@@ -28,7 +28,7 @@ def parse_page(filters, page):
             rental = {
                 'address': address,
                 'postal_code': postal_code,
-                'url': url
+                'url': "https://www.zillow.com" + raw_url[0]
             }
             rentals.append(rental)
 
