@@ -5,7 +5,7 @@ import rentals
 def main():
     argparser = init_argparser()
     args = argparser.parse_args()
-    rentals.find_rentals(args, args.work)
+    rentals.get_rentals(args, args.work)
 
 
 def init_argparser():
