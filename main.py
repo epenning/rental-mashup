@@ -5,7 +5,7 @@ import rentals
 def main():
     argparser = init_argparser()
     args = argparser.parse_args()
-    rentals.get_rentals(args, args.work)
+    rentals.get_rentals(args)
 
 
 def init_argparser():
@@ -37,6 +37,9 @@ def init_argparser():
 
     traveltime_help = "maximum travel time"
     argparser.add_argument('-traveltime', type=int, help=traveltime_help)
+
+    crimeradius_help = "radius in miles to find close crime incidents"
+    argparser.add_argument('-crimeradius', type=float, help=crimeradius_help)
 
     return argparser
 

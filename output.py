@@ -3,7 +3,7 @@ import os
 
 filename_base = "properties-Austin-TX"
 filename_extension = ".csv"
-fieldnames = ['address', 'postal_code', 'url', 'fiber_ready', 'transit_time', 'rent', 'lat', 'long']
+fieldnames = ['address', 'postal_code', 'url', 'fiber_ready', 'transit_time', 'rent', 'lat', 'long', 'crimes']
 
 
 def start_file(type, extension=filename_extension):

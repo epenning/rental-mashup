@@ -3,64 +3,76 @@ import zillow
 import google_fiber
 import travel
 import output
+import crime
 
 
-def get_rentals(filters, work):
+def get_rentals(filters):
     results = {
         'match': output.read_csv('match'),
         'nofiber': output.read_csv('nofiber'),
         'mismatch': output.read_csv('mismatch')
     }
 
-    find_rentals(results, filters, work)
+    find_rentals(results, filters)
     output_results(results)
 
 
-def find_rentals(results, filters, work):
+def find_rentals(results, filters):
     for page in range(1, 100):
         try:
-            process_page(results, filters, work, page)
+            process_page(results, filters, page)
         except zillow.PageException:
             print("Failed to process page {0}".format(page))
             break
 
 
-def process_page(results, filters, work, page):
+def process_page(results, filters, page):
     start = time.time()
 
     rentals = zillow.parse_page(filters, page)
-    process_rentals(rentals, results, filters, work)
+    process_rentals(rentals, results, filters)
 
     end = time.time()
-    if (end - start) < 1:
-        time.sleep(1)
+    if (end - start) < 2:
+        time.sleep(2)
 
 
-def process_rentals(rentals, results, filters, work):
+def process_rentals(rentals, results, filters):
     for rental in rentals:
-        address = rental['address']
-
-        if address in results['match']:
-            results['match'][address].update(rental)
-        elif address in results['nofiber']:
-            results['nofiber'][address].update(rental)
-        elif address in results['mismatch']:
-            results['mismatch'][address].update(rental)
-        else:
-            process_rental(rental, work)
-            results[get_result(rental, filters)][address] = rental
+        rental = update_results(rental, results)
+        process_rental(rental, filters)
+        results[get_result(rental, filters)][rental['address']] = rental
 
 
-def process_rental(rental, work):
+def update_results(rental, results):
+    address = rental['address']
+
+    for key, value in results.items():
+        if address in value:
+            results[key][address].update(rental)
+            return results[key][address]
+
+    return rental
+
+
+def process_rental(rental, filters):
     start = time.time()
+    did_request = False
 
-    rental['fiber_ready'] = google_fiber.fiber_ready(rental)
+    if 'fiber_ready' not in rental:
+        rental['fiber_ready'] = google_fiber.fiber_ready(rental)
+        did_request = True
 
-    if work:
-        rental['transit_time'] = travel.travel_time(rental, 'transit', work)
+    if filters.work and 'transit_time' not in rental:
+        rental['transit_time'] = travel.travel_time(rental, 'transit', filters.work)
+        did_request = True
+
+    if filters.crimeradius and ('crimes' not in rental or not rental['crimes']):
+        rental['crimes'] = len(crime.get_crimes(rental, filters.crimeradius))
+        did_request = True
 
     end = time.time()
-    if (end - start) < 1:
+    if did_request and (end - start) < 1:
         time.sleep(1)
 
 
@@ -77,7 +89,7 @@ def get_result(rental, filters):
 def traveltime_filter(rental, filters):
     return (filters.traveltime and
             (not rental['transit_time'] or
-                (rental['transit_time'] and rental['transit_time'] > filters.traveltime)))
+                (rental['transit_time'] and int(rental['transit_time']) > filters.traveltime)))
 
 
 def fiber_filter(rental, filters):
