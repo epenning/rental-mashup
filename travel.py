@@ -10,7 +10,7 @@ def travel_time(rental, mode, work):
     arrival_time = datetime.strptime('Mar 28 2018  10:00AM', '%b %d %Y %I:%M%p')
 
     try:
-        routes = directions.directions(gmaps, origin, work, mode)
+        routes = directions.directions(gmaps, origin, work, mode, arrival_time=arrival_time)
         return round(routes[0]['legs'][0]['duration']['value']/60)
     except (KeyError, IndexError):
         return None
