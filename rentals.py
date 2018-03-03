@@ -59,7 +59,7 @@ def process_rental(rental, filters):
     start = time.time()
     did_request = False
 
-    if 'fiber_ready' not in rental:
+    if 'fiber_ready' not in rental or rental['fiber_ready'] is False:
         rental['fiber_ready'] = google_fiber.fiber_ready(rental)
         did_request = True
 
