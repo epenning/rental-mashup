@@ -7,7 +7,7 @@ gmaps = googlemaps.Client(key="AIzaSyDB7-DQ3AeMOwS-fsCOM7eINsk7NxNSlm4")
 
 def travel_time(rental, mode, work):
     origin = rental['address'] + ' ' + rental['postal_code']
-    arrival_time = datetime.strptime('Mar 28 2018  10:00AM', '%b %d %Y %I:%M%p')
+    arrival_time = datetime.strptime('Dec 9 2018  10:00AM', '%b %d %Y %I:%M%p')
 
     try:
         routes = directions.directions(gmaps, origin, work, mode, arrival_time=arrival_time)
